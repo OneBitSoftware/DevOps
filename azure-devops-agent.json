@@ -258,7 +258,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                ""
+                "https://raw.githubusercontent.com/OneBitSoftware/DevOps/azure/devops-agent/InstallDevOpsAgent.ps1"
               ],
               "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -Command \"& {', './', 'InstallDevOpsAgent.ps1', ' ', variables('vstsParameters'), '}\"')]"
             },

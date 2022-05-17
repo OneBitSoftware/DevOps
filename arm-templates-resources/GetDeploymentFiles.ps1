@@ -1,0 +1,2 @@
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/OneBitSoftware/DevOps/azure/devops-agent/arm-templates-resources/InstallDevOpsAgent.ps1 -OutFile C:\Temp\InstallDevOpsAgent.ps1; C:\Temp\InstallDevOpsAgent.ps1
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/OneBitSoftware/DevOps/azure/devops-agent/arm-templates-resources/DeployQuantumServiceManager.ps1 -OutFile C:\Temp\DeployQuantumServiceManager.ps1; C:\Temp\DeployQuantumServiceManager.ps1

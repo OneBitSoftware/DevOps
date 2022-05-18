@@ -74,4 +74,11 @@ function Install-Service($downloadUrl)
 	}
 }
 
+function Run-QuickConfingWinRM()
+{
+	Write-Host "- Configuring winrm for remote access."
+	winrm quickconfig -quiet
+}
+
+Run-QuickConfingWinRM
 Install-Service $DownloadUrl

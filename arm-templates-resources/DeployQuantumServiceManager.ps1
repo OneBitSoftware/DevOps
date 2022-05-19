@@ -51,36 +51,6 @@ function Install-Service($downloadUrl)
 			try { 
 				Start-Service $quantumCPEService -ErrorAction Stop
 				Write-Host "- The $serviceName Windows service was registered and started."
-
-				#Temporary test issue fix - start
-				Write-Host "- Start sleep mode for 2 minutes"
-				Get-Date; Start-Sleep -Seconds 120; Get-Date
-				Write-Host "- End sleep mode"
-
-				if ($quantumCPEService.Status -eq "Running") {
-					try { 
-						Write-Host "- The $serviceName Windows service is running. Attempting to stop it."
-						Stop-Service $quantumCPEService -ErrorAction Stop -Confirm
-					}
-					catch { 
-						Write-Host "- Stopping the $serviceName service failed. Run this script with elevated administrator privileges or stop it manually and run this script again."
-						Write-Host $Error[0].Exception.Message
-						Exit 1;
-					}
-				}
-
-				if ($quantumCPEService.Status -eq "Stopped") {
-					try { 
-						Write-Host "- The $serviceName Windows service will now start."
-						Start-Service $quantumCPEService -ErrorAction Stop -Confirm
-					}
-					catch { 
-						Write-Host "- Starting the $serviceName service failed. Run this script with elevated administrator privileges or start it manually."
-						Write-Host $Error[0].Exception.Message
-						Exit 1;
-					}
-				}
-				#Temporary test issue fix - end
 			}
 			catch { 
 				Write-Host "- Starting the $serviceName service failed."
@@ -106,11 +76,11 @@ function Install-Service($downloadUrl)
 	}
 }
 
-function Run-QuickConfingWinRM()
+function Run-PreConfig()
 {
 	Write-Host "- Configuring winrm for remote access."
 	winrm quickconfig -quiet
 }
 
-Run-QuickConfingWinRM
+Run-PreConfig
 Install-Service $DownloadUrl

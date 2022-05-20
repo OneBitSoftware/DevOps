@@ -69,6 +69,7 @@ try{
     $destShellFolder.CopyHere((new-object -com shell.application).namespace("$agentTempFolderName\agent.zip").Items(), 16)
 }
 catch{
+    Write-Error "Error extracting the zip file for the agent"
     Write-Error $Error[0].Exception.Message
     Exit 1;
 }
@@ -99,10 +100,16 @@ try{
     .\config.cmd --unattended --url $serverUrl --auth PAT --token $PersonalAccessToken --pool $PoolName --agent $AgentName --runasservice
 }
 catch{
+    Write-Error "Agent config command failed: $LASTEXITCODE"
     Write-Error $Error[0].Exception.Message
     Exit 1;
 }
 
+if($LASTEXITCODE == 1)
+{
+   Write-Error "Agent config failed: $LASTEXITCODE"
+   Exit 1;
+}
 
 Pop-Location
 

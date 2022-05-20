@@ -105,7 +105,7 @@ catch{
     Exit 1;
 }
 
-if($LASTEXITCODE == 1)
+if($LASTEXITCODE = 1)
 {
    Write-Error "Agent config failed: $LASTEXITCODE"
    Exit 1;

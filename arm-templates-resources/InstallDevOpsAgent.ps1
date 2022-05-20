@@ -49,6 +49,12 @@ do {
 } 
 while ($retries -le $retryCount)
 
+if($retries > $retryCount)
+{
+    Write-Error "Agent failed to be downloaded"
+    Exit 1;
+}
+
 # Construct the agent folder under the main (hardcoded) C: drive.
 $agentInstallationPath = Join-Path "C:" $AgentName 
 # Create the directory for this agent.
@@ -57,9 +63,16 @@ New-Item -ItemType Directory -Force -Path $agentInstallationPath
 # Create a folder for the build work
 New-Item -ItemType Directory -Force -Path (Join-Path $agentInstallationPath $WorkFolder)
 
-Write-Verbose "Extracting the zip file for the agent" -verbose
-$destShellFolder = (new-object -com shell.application).namespace("$agentInstallationPath")
-$destShellFolder.CopyHere((new-object -com shell.application).namespace("$agentTempFolderName\agent.zip").Items(), 16)
+try{
+    Write-Verbose "Extracting the zip file for the agent" -verbose
+    $destShellFolder = (new-object -com shell.application).namespace("$agentInstallationPath")
+    $destShellFolder.CopyHere((new-object -com shell.application).namespace("$agentTempFolderName\agent.zip").Items(), 16)
+}
+catch{
+    Write-Error $Error[0].Exception.Message
+    Exit 1;
+}
+
 
 # Removing the ZoneIdentifier from files downloaded from the internet so the plugins can be loaded
 # Don't recurse down _work or _diag, those files are not blocked and cause the process to take much longer
@@ -71,7 +84,7 @@ $agentConfigPath = [System.IO.Path]::Combine($agentInstallationPath, 'config.cmd
 Write-Verbose "Agent Location = $agentConfigPath" -Verbose
 if (![System.IO.File]::Exists($agentConfigPath)) {
     Write-Error "File not found: $agentConfigPath" -Verbose
-    return
+    Exit 1;
 }
 
 # Call the agent with the configure command and all the options (this creates the settings file) without prompting
@@ -82,7 +95,14 @@ Write-Verbose "Configuring agent" -Verbose
 # Set the current directory to the agent dedicated one previously created.
 Push-Location -Path $agentInstallationPath
 
-.\config.cmd --unattended --url $serverUrl --auth PAT --token $PersonalAccessToken --pool $PoolName --agent $AgentName --runasservice
+try{
+    .\config.cmd --unattended --url $serverUrl --auth PAT --token $PersonalAccessToken --pool $PoolName --agent $AgentName --runasservice
+}
+catch{
+    Write-Error $Error[0].Exception.Message
+    Exit 1;
+}
+
 
 Pop-Location
 

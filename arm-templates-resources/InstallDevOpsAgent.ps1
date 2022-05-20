@@ -51,8 +51,8 @@ while ($retries -le $retryCount)
 
 if($retries > $retryCount)
 {
-    Write-Error "Agent failed to be downloaded"
-    Exit 500;
+    Write-Verbose "Agent failed to be downloaded"
+    Exit 1;
 }
 
 # Construct the agent folder under the main (hardcoded) C: drive.
@@ -69,9 +69,9 @@ try{
     $destShellFolder.CopyHere((new-object -com shell.application).namespace("$agentTempFolderName\agent.zip").Items(), 16)
 }
 catch{
-    Write-Error "Error extracting the zip file for the agent"
-    Write-Error $Error[0].Exception.Message
-    Exit 500;
+    Write-Verbose "Error extracting the zip file for the agent"
+    Write-Verbose $Error[0].Exception.Message
+    Exit 1;
 }
 
 
@@ -84,8 +84,8 @@ Get-ChildItem -Recurse -Path $agentInstallationPath | Unblock-File | out-null
 $agentConfigPath = [System.IO.Path]::Combine($agentInstallationPath, 'config.cmd')
 Write-Verbose "Agent Location = $agentConfigPath" -Verbose
 if (![System.IO.File]::Exists($agentConfigPath)) {
-    Write-Error "File not found: $agentConfigPath" -Verbose
-    Exit 500;
+    Write-Verbose "File not found: $agentConfigPath" -Verbose
+    Exit 1;
 }
 
 # Call the agent with the configure command and all the options (this creates the settings file) without prompting
@@ -100,16 +100,15 @@ try{
     .\config.cmd --unattended --url $serverUrl --auth PAT --token $PersonalAccessToken --pool $PoolName --agent $AgentName --runasservice
 }
 catch{
-    Write-Error "Agent config command failed: $LASTEXITCODE"
-    Write-Error $Error[0].Exception.Message
-    Exit 500;
+    Write-Verbose "Agent config command failed: $LASTEXITCODE"
+    Write-Verbose $Error[0].Exception.Message
+    Exit 1;
 }
 
 if($LASTEXITCODE = 1)
 {
-   Write-Error "Agent config failed: $LASTEXITCODE"
-   Write-Error "Exiting with code 500."
-   Exit 500;
+   Write-Verbose "Agent config failed exit code 1."
+   Exit 1;
 }
 
 Pop-Location

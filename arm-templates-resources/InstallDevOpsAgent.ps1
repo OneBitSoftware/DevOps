@@ -52,7 +52,7 @@ while ($retries -le $retryCount)
 if($retries > $retryCount)
 {
     Write-Error "Agent failed to be downloaded"
-    Exit 1;
+    Exit 500;
 }
 
 # Construct the agent folder under the main (hardcoded) C: drive.
@@ -71,7 +71,7 @@ try{
 catch{
     Write-Error "Error extracting the zip file for the agent"
     Write-Error $Error[0].Exception.Message
-    Exit 1;
+    Exit 500;
 }
 
 
@@ -85,7 +85,7 @@ $agentConfigPath = [System.IO.Path]::Combine($agentInstallationPath, 'config.cmd
 Write-Verbose "Agent Location = $agentConfigPath" -Verbose
 if (![System.IO.File]::Exists($agentConfigPath)) {
     Write-Error "File not found: $agentConfigPath" -Verbose
-    Exit 1;
+    Exit 500;
 }
 
 # Call the agent with the configure command and all the options (this creates the settings file) without prompting
@@ -102,13 +102,14 @@ try{
 catch{
     Write-Error "Agent config command failed: $LASTEXITCODE"
     Write-Error $Error[0].Exception.Message
-    Exit 1;
+    Exit 500;
 }
 
 if($LASTEXITCODE = 1)
 {
    Write-Error "Agent config failed: $LASTEXITCODE"
-   Exit 1;
+   Write-Error "Exiting with code 500."
+   Exit 500;
 }
 
 Pop-Location

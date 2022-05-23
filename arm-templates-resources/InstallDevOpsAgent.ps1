@@ -51,7 +51,7 @@ while ($retries -le $retryCount)
 
 if($retries > $retryCount)
 {
-    Write-Verbose "Agent failed to be downloaded"
+    Write-Verbose "Agent failed to be downloaded" -Verbose
     Exit 1;
 }
 
@@ -69,8 +69,8 @@ try{
     $destShellFolder.CopyHere((new-object -com shell.application).namespace("$agentTempFolderName\agent.zip").Items(), 16)
 }
 catch{
-    Write-Verbose "Error extracting the zip file for the agent"
-    Write-Verbose $Error[0].Exception.Message
+    Write-Verbose "Error extracting the zip file for the agent" -Verbose
+    Write-Verbose $Error[0].Exception.Message -Verbose
     Exit 1;
 }
 
@@ -100,14 +100,14 @@ try{
     .\config.cmd --unattended --url $serverUrl --auth PAT --token $PersonalAccessToken --pool $PoolName --agent $AgentName --runasservice
 }
 catch{
-    Write-Verbose "Agent config command failed: $LASTEXITCODE"
-    Write-Verbose $Error[0].Exception.Message
+    Write-Verbose "Agent config command failed: $LASTEXITCODE" -Verbose
+    Write-Verbose $Error[0].Exception.Message -Verbose
     Exit 1;
 }
 
 if($LASTEXITCODE = 1)
 {
-   Write-Verbose "Agent config failed exit code 1."
+   Write-Verbose "Agent config failed exit code 1." -Verbose
    Exit 1;
 }
 

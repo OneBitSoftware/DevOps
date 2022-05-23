@@ -2,15 +2,16 @@
 .SYNOPSIS
 Downloads the Quantum Service Manager and deploys it as a Windows service.
 
-.PARAMETER DownloadUrl
-Specifies the URL of the Quantum Service Manager download file. Optional.
+.PARAMETER VersionUrl
+Specifies the URL of the Quantum Service Manager latest version file. Optional.
 #>
 param (
     [Parameter(Mandatory=$false, ValueFromPipeline=$true, ValueFromPipelinebyPropertyName=$true)]
-    [string]$DownloadUrl = "https://github.com/OneBitSoftware/DevOps/releases/download/QSM-1.0.104.20870/Quantum.Service.Manager.exe"
+
+	[string]$VersionUrl = "https://github.com/OneBitSoftware/DevOps/releases/download/QSM-Latest/version.json"
 	)
 
-function Install-Service($downloadUrl)
+function Install-Service($VersionUrl)
 {
 	$serviceName = "QuantumSM";
 
@@ -23,13 +24,21 @@ function Install-Service($downloadUrl)
 	if ($true) {
 		Write-Host "- The $serviceName Windows service was not found. Proceeding with registration."
 
-		
-
 		$localQSMExe = Get-ChildItem -Path $outFile -ErrorAction SilentlyContinue
 
-		if ($null -eq $localQSMExe) {	
-			Write-Host "- Cannot locate the QuantumSM Windows service executable: $localQSMExe. Downloading it to the current folder."
-			Invoke-WebRequest -Uri $downloadUrl -OutFile $outFile
+		if ($null -eq $localQSMExe) {
+
+			Write-Host "- Cannot locate the QuantumSM Windows service executable: $localQSMExe."
+
+			Write-Host "- Get latest version from broadcast URL"
+			$latestVersion = Invoke-RestMethod -Uri $VersionUrl
+			$latestVersionString = "$($latestVersion.Major).$($latestVersion.Minor).$($latestVersion.Build).$($latestVersion.Revision)"
+
+			Write-Host "- Build the latest version download URL for the EXE file"
+			$newVersionUrl = "https://github.com/OneBitSoftware/DevOps/releases/download/QSM-$($latestVersionString)/Quantum.Service.Manager.exe"
+			
+			Write-Host "- Download the latest exe"
+			Invoke-WebRequest -Uri $newVersionUrl -OutFile $outFile
 		}
 
 		$localQSMExe = Get-ChildItem -Path $outFile -ErrorAction SilentlyContinue
@@ -58,8 +67,6 @@ function Install-Service($downloadUrl)
 				Exit 1;
 			}
 		}
-
-
 	}	
 	else {
 		Write-Host "- The $serviceName Windows service already exists."
@@ -83,4 +90,4 @@ function Run-PreConfig()
 }
 
 Run-PreConfig
-Install-Service $DownloadUrl
+Install-Service $VersionUrl

@@ -37,7 +37,7 @@
                             }
                         ]
                     },
-                    "allowExisting": false
+                    "allowExisting": true
                 },
                 "location": {
                     "label": "Location (Region)",
@@ -106,12 +106,12 @@
         "steps": [
             {
                 "name": "VirtualMachineConfig",
-                "label": "Virtual Machine Settings",
+                "label": "Virtual Machine",
                 "subLabel": {
                     "preValidation": "Configure the virtual machine's resources and settings",
                     "postValidation": "Done"
                 },
-                "bladeTitle": "Virtual Machine Settings",
+                "bladeTitle": "Virtual Machine",
                 "elements": [
                     {
                         "name": "vmSize",
@@ -136,19 +136,13 @@
                         "count": "1"
                     },
                     {
-                        "name": "storageAccount",
+                        "name": "vmStorageAccount",
                         "type": "Microsoft.Storage.StorageAccountSelector",
-                        "label": "Diagnostic storage account",
-                        "toolTip": "Storage Account for the Virtual Machine's diagnostics",
+                        "label": "Storage account",
+                        "toolTip": "Storage Account for Application data and Virtual Machine's diagnostics",
                         "defaultValue": {
                             "type": "Standard_LRS",
-                            "name": "[concat('qdmsvmdiag', take(replace(guid(), '-', ''), 12))]"
-                        },
-                        "constraints": {
-                            "allowedTypes": [
-                                "Standard_LRS",
-                                "Standard_GRS"
-                            ]
+                            "name": "[concat('qdmsdiag', take(replace(guid(), '-', ''), 12))]"
                         }
                     },
                     {
@@ -163,7 +157,7 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(basics('vmName'), '-ip')]",
+                            "publicIpAddressName": "[concat('qdms-vm-ip-', take(replace(guid(), '-', ''), 12))]",
                             "domainNameLabel": "[concat('qdms-', take(replace(guid(), '-', ''), 12))]"
                         },
                         "options": {
@@ -188,7 +182,7 @@
                             "subnets": "Subnets for the virtual network"
                         },
                         "defaultValue": {
-                            "name": "QdmsVirtualNetwork",
+                            "name": "QDMS-VirtualNetwork",
                             "addressPrefixSize": "/16"
                         },
                         "constraints": {
@@ -198,7 +192,7 @@
                             "subnet1": {
                                 "label": "Subnet",
                                 "defaultValue": {
-                                    "name": "Qdms-Subnet",
+                                    "name": "QDMS-Subnet",
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
@@ -210,31 +204,87 @@
                         }
                     }
                 ]
+            },
+            {
+                "name": "StorageAccountConfig",
+                "label": "Storage Account",
+                "subLabel": {
+                    "preValidation": "Configure the storage account settings",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Storage Account",
+                "elements": [
+                    {
+                        "name": "applicationStorageAccount",
+                        "type": "Microsoft.Storage.StorageAccountSelector",
+                        "label": "Storage account name",
+                        "toolTip": "Storage account that will be used for application data.",
+                        "defaultValue": {
+                            "name": "storageaccount01",
+                            "type": "Premium_LRS"
+                        },
+                        "options": {
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "MonitoringConfig",
+                "label": "Monitoring & Alerting",
+                "subLabel": {
+                    "preValidation": "Configure the monitoring and alerting settings",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Monitoring & Alerting",
+                "elements": [
+                    {
+                        "name": "alertsEmail",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Alerts Email",
+                        "defaultValue": "radi@sharepoint.com",
+                        "toolTip": "Valid email",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+                            "validationMessage": "The input value does not represent a valid email address."
+                        },
+                        "visible": true
+                    }
+                ]
             }
         ],
         "outputs": {
             "location": "[location()]",
             "vmName": "[basics('vmName')]",
             "adminUsername": "[basics('adminUsername')]",
-            "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPassword": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
             "vmSize": "[steps('VirtualMachineConfig').vmSize]",
-            "storageNewOrExisting": "[steps('VirtualMachineConfig').storageAccount.newOrExisting]",
-            "storageAccountName": "[steps('VirtualMachineConfig').storageAccount.name]",
-            "storageAccountType": "[steps('VirtualMachineConfig').storageAccount.type]",
-            "storageAccountResourceGroupName": "[steps('VirtualMachineConfig').storageAccount.resourceGroup]",
+            "vmStorageAccountNewOrExisting": "[steps('VirtualMachineConfig').vmStorageAccount.newOrExisting]",
+            "vmStorageAccountName": "[steps('VirtualMachineConfig').vmStorageAccount.name]",
+            "vmStorageAccountType": "[steps('VirtualMachineConfig').vmStorageAccount.type]",
+            "vmStorageAccountKind": "[steps('VirtualMachineConfig').vmStorageAccount.kind]",
+            "vmStorageAccountResourceGroup": "[steps('VirtualMachineConfig').vmStorageAccount.resourceGroup]",
+            "applicationStorageAccountNewOrExisting": "[steps('StorageAccountConfig').applicationStorageAccount.newOrExisting]",
+            "applicationStorageAccountName": "[steps('StorageAccountConfig').applicationStorageAccount.name]",
+            "applicationStorageAccountType": "[steps('StorageAccountConfig').applicationStorageAccount.type]",
+            "applicationStorageAccountKind": "[steps('StorageAccountConfig').applicationStorageAccount.kind]",
+            "applicationStorageAccountResourceGroup": "[steps('StorageAccountConfig').applicationStorageAccount.resourceGroup]",
             "virtualNetworkNewOrExisting": "[steps('VirtualMachineConfig').virtualNetwork.newOrExisting]",
             "virtualNetworkName": "[steps('VirtualMachineConfig').virtualNetwork.name]",
-            "addressPrefixes": "[steps('VirtualMachineConfig').virtualNetwork.addressPrefixes]",
-            "subnetName": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.name]",
-            "subnetPrefix": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
+            "virtualNetworkAddressPrefixes": "[steps('VirtualMachineConfig').virtualNetwork.addressPrefixes]",
+            "virtualNetworkSubnetName": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.name]",
+            "virtualNetworkSubnetPrefix": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
             "virtualNetworkResourceGroupName": "[steps('VirtualMachineConfig').virtualNetwork.resourceGroup]",
             "publicIpNewOrExisting": "[steps('VirtualMachineConfig').publicIpAddress.newOrExistingOrNone]",
             "publicIpName": "[steps('VirtualMachineConfig').publicIpAddress.name]",
             "publicIpDns": "[steps('VirtualMachineConfig').publicIpAddress.domainNameLabel]",
             "publicIpResourceGroupName": "[steps('VirtualMachineConfig').publicIpAddress.resourceGroup]",
             "publicIPAllocationMethod": "[steps('VirtualMachineConfig').publicIpAddress.publicIPAllocationMethod]",
-            "publicIpSku": "[steps('VirtualMachineConfig').publicIpAddress.sku]"
+            "publicIpSku": "[steps('VirtualMachineConfig').publicIpAddress.sku]",
+            "alertsEmail": "[steps('MonitoringConfig').alertsEmail]"
         }
     }
 }

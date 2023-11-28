@@ -71,15 +71,19 @@
         },
         "virtualNetworkNewOrExisting": {
             "defaultValue": "",
-            "type": "String"
+            "type": "String",
+            "allowedValues": [
+                "new",
+                "existing"
+            ]
         },
         "virtualNetworkName": {
             "defaultValue": "",
             "type": "String"
         },
         "virtualNetworkAddressPrefixes": {
-            "type": "string",
-            "defaultValue": "10.0.0.0/16",
+            "type": "array",
+            "defaultValue": [ "10.0.0.0/16" ],
             "metadata": {
                 "description": "Address prefix"
             }
@@ -186,6 +190,9 @@
             },
             "properties": {
                 "accessTier": "Hot"
+            },
+            "tags": {
+                "ResourceGroup": "[parameters('vmStorageAccountResourceGroup')]"
             }
         },
         {
@@ -200,6 +207,9 @@
             },
             "properties": {
                 "accessTier": "Hot"
+            }, 
+            "tags": {
+                "ResourceGroup": "[parameters('applicationStorageAccountResourceGroup')]"
             }
         },
         {
@@ -687,6 +697,31 @@
             }
         },
         {
+            "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('virtualNetworkAddressPrefixes')]"
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('virtualNetworkSubnetName')]",
+                        "id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), 'default')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('virtualNetworkSubnetPrefix')]",
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+        {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2023-05-01",
             "name": "[parameters('networkInterfaceName')]",
@@ -700,7 +735,7 @@
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
-                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName')), '/ipConfigurations/ipconfig1')]",
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('networkInterfaceName'), '/ipConfigurations/ipconfig1'))]",
                         "etag": "W/\"98f62a4b-22dd-441e-a78f-a64b33c3c114\"",
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
@@ -708,13 +743,13 @@
                             "privateIPAddress": "10.0.0.5",
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
+                                "id": "[resourceId(parameters('publicIpResourceGroupName'),'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
                                 "properties": {
                                     "deleteOption": "Delete"
                                 }
                             },
                             "subnet": {
-                                "id": "[variables('subnetReference')]"
+                                "id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), 'default')]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "IPv4"

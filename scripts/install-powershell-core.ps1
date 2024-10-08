@@ -1,5 +1,9 @@
 $ScriptsMainFolder = "C:\Install" # Full path with disk c:\install
 
+
+# Create the install folder
+New-Item -ItemType Directory -Path "C:\Install"
+
 ############################# Install PowerShell Core
 $PowerShellMsiFilename = "PowerShell-7.4.1-win-x64.msi"
 $PowerShellDownloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v7.4.1/$PowerShellMsiFilename"

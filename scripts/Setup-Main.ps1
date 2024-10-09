@@ -4,17 +4,23 @@ try {
     # Create the install folder
     New-Item -ItemType Directory -Path $ScriptsMainFolder
 
+
+
     ############################# Install PowerShell Core
-    .\Install-PowerShellCore.ps1
+    $PowerShellMsiFilename = "PowerShell-7.4.5-win-x64.msi"
+    $PowerShellDownloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v7.4.5/$PowerShellMsiFilename"
+    $PowerShellOutFile = "$ScriptsMainFolder\$PowerShellMsiFilename"
+
+    Write-Host "Downloading $PowerShellDownloadURL"
+    Invoke-WebRequest -Uri $PowerShellDownloadURL -Method Get -OutFile $PowerShellOutFile
+    Write-Host "Downloading PowerShell Core completed."
+
+    Write-Host "Installing PowerShell Core"
+    msiexec.exe /l*v powershellinstall.log /quiet /i $PowerShellOutFile ENABLE_MU=0 USE_MU=0 ADD_PATH=1
+    Write-Host "Installing PowerShell Core completed."
     ############################# End PowerShell Core
 
-    ############################# Execute custom PowerShell Core command
-    #Invoke-Command { & "pwsh.exe" } -NoNewScope
-    #$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-    #Invoke-Command { & "pwsh.exe" } -NoNewScope
-    #pwsh Test-CreateFolder.ps1 
-    Start-Process -FilePath "C:\Program Files\PowerShell\7\pwsh.exe" -ArgumentList "-ExecutionPolicy Bypass -Command `"C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1`" -Wait"
-    ############################# End execute custom PowerShell Core command
+    "1111p2222q3333".Split('pq')
 } catch {
     $formatstring = "{0} : {1}`n{2}`n" +
                   "    + CategoryInfo          : {3}`n" +

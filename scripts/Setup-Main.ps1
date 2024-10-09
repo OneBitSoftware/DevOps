@@ -9,7 +9,7 @@ try {
     ############################# End PowerShell Core
 
     ############################# Execute custom PowerShell Core command
-    Start-Process -FilePath "pwsh.exe" -ArgumentList "-File `.\Test-CreateFolder.ps1`"" -Wait
+    & "C:\Program Files\PowerShell\7\pwsh.exe" Test-CreateFolder.ps1 
     ############################# End execute custom PowerShell Core command
 } catch {
     $formatstring = "{0} : {1}`n{2}`n" +

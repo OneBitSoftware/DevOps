@@ -11,6 +11,7 @@ try {
     ############################# Execute custom PowerShell Core command
     #Invoke-Command { & "pwsh.exe" } -NoNewScope
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    Invoke-Command { & "pwsh.exe" } -NoNewScope
     pwsh Test-CreateFolder.ps1 
     #& "C:\Program Files\PowerShell\7\pwsh.exe" { "Hello!" }
     ############################# End execute custom PowerShell Core command

@@ -9,6 +9,6 @@ Invoke-WebRequest -Uri $PowerShellDownloadURL -Method Get -OutFile $PowerShellOu
 Write-Host "Downloading PowerShell Core completed."
 
 Write-Host "Installing PowerShell Core"
-msiexec.exe /l*v powershellinstall.log /quiet /i $PowerShellOutFile ENABLE_MU=0 USE_MU=0
+msiexec.exe /l*v powershellinstall.log /quiet /i $PowerShellOutFile ENABLE_MU=0 USE_MU=0 ADD_PATH=1
 Write-Host "Installing PowerShell Core completed."
 ############################# End PowerShell Core

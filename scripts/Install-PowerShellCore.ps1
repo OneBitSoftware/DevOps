@@ -1,8 +1,5 @@
-# Reuse global variables
-$variablesScriptName = "Setup-Main.ps1"
-. ".\$variablesScriptName"
-
 ############################# Install PowerShell Core
+$ScriptsMainFolder = "C:\Install" # Full path with disk c:\install
 $PowerShellMsiFilename = "PowerShell-7.4.1-win-x64.msi"
 $PowerShellDownloadURL = "https://github.com/PowerShell/PowerShell/releases/download/v7.4.1/$PowerShellMsiFilename"
 $PowerShellOutFile = "$ScriptsMainFolder\$PowerShellMsiFilename"

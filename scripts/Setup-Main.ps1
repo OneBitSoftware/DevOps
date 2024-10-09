@@ -2,7 +2,7 @@ try {
     $ScriptsMainFolder = "C:\Install" # Full path with disk c:\install
 
     # Create the install folder
-    New-Item -ItemType Directory -Path "C:\Install"
+    New-Item -ItemType Directory -Path $ScriptsMainFolder
 
     ############################# Install PowerShell Core
     .\Install-PowerShellCore.ps1

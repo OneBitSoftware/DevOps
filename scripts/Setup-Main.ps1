@@ -13,8 +13,7 @@ try {
     #$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
     #Invoke-Command { & "pwsh.exe" } -NoNewScope
     #pwsh Test-CreateFolder.ps1 
-    & "C:\Program Files\PowerShell\7\pwsh.exe" { "Hello!" }
-    pwsh Test-CreateFolder.ps1 
+    Start-Process -FilePath "C:\Program Files\PowerShell\7\pwsh.exe" -ArgumentList "-ExecutionPolicy Bypass -Command `"C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1`" -Wait"
     ############################# End execute custom PowerShell Core command
 } catch {
     $formatstring = "{0} : {1}`n{2}`n" +

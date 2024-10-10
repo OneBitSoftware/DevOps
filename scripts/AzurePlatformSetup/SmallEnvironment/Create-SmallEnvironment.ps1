@@ -110,5 +110,12 @@ $diskConfig = New-AzDiskConfig -Location $region -CreateOption Empty -DiskSizeGB
 $newDataDisk = New-AzDisk -ResourceGroupName $resourceGroupName -DiskName $dataDiskName -Disk $diskConfig
 Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $newDataDisk.Id -Lun 1
 Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName
-Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString "Get-disk | where-Object Number -eq '1' | Initialize-Disk -PartitionStyle GPT -PassThru | New-Partition -UseMaximumSize -DriveLetter E | Format-Volume -FileSystem NTFX -NewFileSystemLabel 'QuantumDMS-Data'"
+Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString "Get-disk | where-Object Number -eq '1' | Initialize-Disk -PartitionStyle GPT -PassThru | New-Partition -UseMaximumSize -DriveLetter E | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'QuantumDMS-Data'"
 
+$command1 = "iwr -Uri `"https://raw.githubusercontent.com/OneBitSoftware/DevOps/refs/heads/main/scripts/Base/Install-PowerShellCore.ps1`" -OutFile `"E:\Install\Install-PowerShellCore.ps1`""
+$command2 = "powershell `"E:\Install\Install-PowerShellCore.ps1`" -ScriptDownloadFolder `"E:\Install`" -PowerShellCoreVersion 7.4.5"
+$psCommand = "mkdir E:\Install;e:;cd e:\install;powershell -c '$command1';$command2;"
+$commandResult = Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString $psCommand
+
+$ps7Command1 = "C:\Program Files\PowerShell\7\pwsh.exe"
+$ps7CommandResult = Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString $ps7Command1

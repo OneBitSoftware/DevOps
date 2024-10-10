@@ -4,15 +4,12 @@ try {
     # Create the install folder
     New-Item -ItemType Directory -Path $ScriptsMainFolder
 
-    $PSVersionTable
-
-    "1111p2222q3333".Split('pq')
 
     ############################# Install PowerShell Core
     .\Install-PowerShellCore.ps1
     ############################# End PowerShell Core
 
-    whoami
+    #whoami
 
     #& "C:\Program Files\PowerShell\7\pwsh.exe" "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1"
 
@@ -25,6 +22,12 @@ try {
     # & "C:\Program Files\PowerShell\7\pwsh.exe" { "Hello!" }
     # pwsh Test-CreateFolder.ps1 
     ############################# End execute custom PowerShell Core command
+
+
+
+    psexec -h -u "teoTest123" -p "Pass@word123" "C:\Program Files\PowerShell\7\pwsh.exe" "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1"
+
+
 } catch {
     $formatstring = "{0} : {1}`n{2}`n" +
                   "    + CategoryInfo          : {3}`n" +

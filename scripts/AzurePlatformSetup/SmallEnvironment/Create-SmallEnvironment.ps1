@@ -111,3 +111,4 @@ $newDataDisk = New-AzDisk -ResourceGroupName $resourceGroupName -DiskName $dataD
 Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $newDataDisk.Id -Lun 1
 Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName
 Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString "Get-disk | where-Object Number -eq '1' | Initialize-Disk -PartitionStyle GPT -PassThru | New-Partition -UseMaximumSize -DriveLetter E | Format-Volume -FileSystem NTFX -NewFileSystemLabel 'QuantumDMS-Data'"
+

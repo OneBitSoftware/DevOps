@@ -117,5 +117,7 @@ $command2 = "powershell `"E:\Install\Install-PowerShellCore.ps1`" -ScriptDownloa
 $psCommand = "mkdir E:\Install;e:;cd e:\install;powershell -c '$command1';$command2;"
 $commandResult = Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString $psCommand
 
-$ps7Command1 = "C:\Program Files\PowerShell\7\pwsh.exe"
+$ps7Command1 = "iwr -Uri `"https://raw.githubusercontent.com/OneBitSoftware/DevOps/refs/heads/main/scripts/AzurePlatformSetup/SmallEnvironment/Setup-SmallEnvironment`" -OutFile `"E:\Install\Setup-SmallEnvironment.ps1`""
+#$ps7Command1 = "& `"C:\Program Files\PowerShell\7\pwsh.exe`" -Command { Get-ChildItem }"
 $ps7CommandResult = Invoke-AzVMRunCommand -VM $vm -CommandId 'RunPowerShellScript' -ScriptString $ps7Command1
+$ps7CommandResult

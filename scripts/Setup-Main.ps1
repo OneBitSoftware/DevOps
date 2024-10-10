@@ -12,6 +12,8 @@ try {
     .\Install-PowerShellCore.ps1
     ############################# End PowerShell Core
 
+    whoami
+
     #& "C:\Program Files\PowerShell\7\pwsh.exe" "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1"
 
     ############################# Execute custom PowerShell Core command

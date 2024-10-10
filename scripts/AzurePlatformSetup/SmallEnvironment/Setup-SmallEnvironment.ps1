@@ -62,6 +62,7 @@ while ($null -eq (Get-Service mongodb) -and (Get-Date) -le $limit) {
     Write-Host "Waiting 5 seconds for the mongodb service to start..."
     Start-Sleep -Seconds 5
 }
+Start-Sleep -Seconds 5
 if ((Get-Service mongodb).Status -ne "Running") {
     Write-Host "MongoDB is not running as a service. Terminating." -ForegroundColor Red
     Exit 1;

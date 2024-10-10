@@ -4,16 +4,22 @@ try {
     # Create the install folder
     New-Item -ItemType Directory -Path $ScriptsMainFolder
 
+    $PSVersionTable
+
+    "1111p2222q3333".Split('pq')
+
     ############################# Install PowerShell Core
     .\Install-PowerShellCore.ps1
     ############################# End PowerShell Core
+
+    #& "C:\Program Files\PowerShell\7\pwsh.exe" "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1"
 
     ############################# Execute custom PowerShell Core command
     #Invoke-Command { & "pwsh.exe" } -NoNewScope
     #$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
     #Invoke-Command { & "pwsh.exe" } -NoNewScope
     #pwsh Test-CreateFolder.ps1 
-    Start-Process -FilePath "C:\Program Files\PowerShell\7\pwsh.exe" -ArgumentList "-ExecutionPolicy Bypass -Command `"C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1`" -Wait"
+    #Start-Process -FilePath "C:\Program Files\PowerShell\7\pwsh.exe" -ArgumentList "-ExecutionPolicy Bypass -Command `"C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1`" -Wait"
     # & "C:\Program Files\PowerShell\7\pwsh.exe" { "Hello!" }
     # pwsh Test-CreateFolder.ps1 
     ############################# End execute custom PowerShell Core command

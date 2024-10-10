@@ -1,4 +1,21 @@
 
+############################################################ Start Windows Defender Exclusions
+
+Add-MpPreference -ExclusionPath $ElasticInstallPath
+Add-MpPreference -ExclusionPath $ElasticDataPath
+Add-MpPreference -ExclusionPath $MongoDbPath
+Add-MpPreference -ExclusionPath $ClientFolder
+Add-MpPreference -ExclusionPath $MainFolder
+
+Set-MpPreference -DisableRealtimeMonitoring $true
+
+
+# To remove Windows Defender
+# Remove-WindowsFeature Windows-Defender, Windows-Defender-GUI
+############################################################ End Windows Defender Exclusions
+
+
+############################################################ MongoDB Start
 
 # MongoDB variables - Download the Community edition
 $MongoDbPath = "E:\MongoDB"
@@ -6,7 +23,6 @@ $MongoDbPath = "E:\MongoDB"
 $MongoMajorVersion = "7.0" # Used in path
 $MongoMinorVersion = "14"
 $MongoDbVersion = "$MongoMajorVersion.$MongoMinorVersion"
-$UnzippedFolderName = "mongodb-win32-x86_64-windows-$MongoDbVersion"
 $MongoMsiFilename = "mongodb-windows-x86_64-$MongoDbVersion-signed.msi"
 $MongoDownloadURL = "https://fastdl.mongodb.org/windows/$MongoMsiFilename"
 $MongoDbConnectionString = "mongodb://localhost:27017/${CatalogDatabaseName}"
@@ -14,7 +30,6 @@ $MongoShellFilename = "mongosh-2.3.2-x64.msi"
 $MongoShellDownloadURL = "https://downloads.mongodb.com/compass/$MongoShellFilename"
 
 
-############################################################ MongoDB Start
 #Check if mongo is already installed
 if ((Test-Path -path $MongoDbPath) -eq $True) 
 { 
@@ -39,7 +54,7 @@ Write-Host "Downloading mongo complete."
 
 
 ######## New - Use the MSI to install MongoDB Server
-msiexec.exe /l*v mdbinstall.log /qb /i $mongoDbMsiFile INSTALLLOCATION="$MongoDbPath\Server\5.0\" ADDLOCAL="ServerService"
+msiexec.exe /l*v mdbinstall.log /qb /i $mongoDbMsiFile INSTALLLOCATION="$MongoDbPath\Server\$MongoMajorVersion\" ADDLOCAL="ServerService"
 
 # Loop and wait for the service to start
 $limit = (Get-Date).AddMinutes(5)

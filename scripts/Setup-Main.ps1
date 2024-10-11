@@ -1,3 +1,5 @@
+param ([Parameter(Mandatory)]$username, [Parameter(Mandatory)][SecureString] $password)
+
 try {
     $ScriptsMainFolder = "C:\Install" # Full path with disk c:\install
 
@@ -23,7 +25,11 @@ try {
     # pwsh Test-CreateFolder.ps1 
     ############################# End execute custom PowerShell Core command
 
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
+    C:\ProgramData\chocolatey\bin\choco.exe install -y sysinternals
+
+    psexec -i -h -u $username -p $password pwsh.exe "C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\1.10.17\Downloads\0\Test-CreateFolder.ps1"
 } catch {
     $formatstring = "{0} : {1}`n{2}`n" +
                   "    + CategoryInfo          : {3}`n" +

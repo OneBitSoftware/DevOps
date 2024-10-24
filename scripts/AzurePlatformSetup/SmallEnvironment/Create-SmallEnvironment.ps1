@@ -33,7 +33,7 @@ $region = "Sweden Central" # swedencentral
 $resourceGroupName = "QuantumDMS-BLD-PROD"
 
 $vmName = "QuantumDMS-VM01"
-$vmSize = "Standard_D2_v5"
+$vmSize = $VmSize #"Standard_D2_v5"
 $vmStorageAccountName = "quantumdms$(Get-Random)" # Must be globally unique 
 
 $virtualNetworkName = "quantumdms-vnet"

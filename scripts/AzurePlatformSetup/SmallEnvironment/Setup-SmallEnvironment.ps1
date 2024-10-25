@@ -490,8 +490,29 @@ Invoke-WebRequest -Uri "https://github.com/certbot/certbot/releases/download/v2.
 # For this to work, the domain DNS settings must work. in my case, this was not ready.
 # For an *.cloudapp.azure.com domain - this would be OK.
 & "C:\Program Files\Certbot\bin\certbot.exe" certonly --standalone --email office@onebitsoftware.net -d dms.bld.bg --agree-tos --no-eff-email
+# after successful execution of the above line, the C:\Certbot folder will be created
 
+# This only works when port 80 is open in Windows Firewall AND in Azure, the network security group
+New-NetFirewallRule -DisplayName "Allow Certbot" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow -Enabled False
 
-New-NetFirewallRule -DisplayName "Allow Certbot" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
-Get-NetFirewallRule -DisplayName "Allow Certbot"
-Get-NetFirewallRule -DisplayName "Allow Certbot" | Remove-NetFirewallRule
+Get-NetFirewallRule -DisplayName "Allow Certbot" | Enable-NetFirewallRule
+
+# See the triggered action
+Get-ScheduledTask -TaskName "Certbot Renew Task"
+$task = Get-ScheduledTask -TaskName "Certbot Renew Task"
+$action = $task.Actions[0]
+#$action.Arguments = "-NoExit -Command `"& 'C:\Program Files\Certbot\bin\certbot.exe' renew --non-interactive --force-renewal`" > c:\certbot\ps.log"
+$action.Arguments = "-WindowStyle Hidden -File E:\Install\PerformSslUpdate.ps1"
+Set-ScheduledTask -TaskName "Certbot Renew Task" -Action $action 
+Get-ScheduledTask -TaskName "Certbot Renew Task" | Start-ScheduledTask
+
+# Get-NetFirewallRule -DisplayName "Allow Certbot" | Remove-NetFirewallRule
+
+# Create the SSL folder
+New-Item -ItemType Directory -Force -Path E:\QuantumDMSServer\SSL
+
+# Create the file to copy
+New-Item "C:\Certbot\renewal-hooks\deploy\CopyForDotNet.bat" -ItemType File -Value "copy C:\Certbot\live\dms.bld.bg c:\QuantumDMSServer\SSL"
+
+Get-NetFirewallRule -DisplayName "Allow Certbot" | Enable-NetFirewallRule
+Get-NetFirewallRule -DisplayName "Allow Certbot" | Disable-NetFirewallRule

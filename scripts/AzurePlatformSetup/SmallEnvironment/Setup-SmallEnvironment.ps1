@@ -516,3 +516,5 @@ New-Item "C:\Certbot\renewal-hooks\deploy\CopyForDotNet.bat" -ItemType File -Val
 
 Get-NetFirewallRule -DisplayName "Allow Certbot" | Enable-NetFirewallRule
 Get-NetFirewallRule -DisplayName "Allow Certbot" | Disable-NetFirewallRule
+
+msiexec.exe /l*v quantum-content-processing-api.log /quiet /i e:\Install\Quantum.ContentProcessing.installer.msi INSTALLFOLDER="E:\QuantumDMSServer\Release" MSIINSTALLPERUSER=0
